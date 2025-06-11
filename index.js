@@ -8,7 +8,7 @@ const fetch = require('node-fetch');
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors({ origin: 'http://localhost:3000', methods: ['GET', 'POST', 'DELETE', 'PATCH'], credentials: true }));
+app.use(cors({ origin: ['http://localhost:3000'], methods: ['GET', 'POST', 'DELETE', 'PATCH'], credentials: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -320,16 +320,13 @@ app.patch('/api/warsztat/:id', (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
-  // Logowanie przychodzącego żądania
   console.log('PATCH /api/warsztat/:id - Otrzymano:', { id, status });
 
-  // Walidacja statusu
   if (!['zaakceptowane', 'odrzucone'].includes(status)) {
     console.error('Nieprawidłowy status:', status);
     return res.status(400).json({ error: 'Nieprawidłowy status' });
   }
 
-  // Aktualizacja statusu w bazie
   const query = 'UPDATE warsztat SET status = ? WHERE id = ?';
   connection.query(query, [status, id], (err, result) => {
     if (err) {
@@ -342,7 +339,6 @@ app.patch('/api/warsztat/:id', (req, res) => {
       return res.status(404).json({ error: 'Wizyta nie znaleziona' });
     }
 
-    // Weryfikacja statusu w bazie po aktualizacji
     connection.query('SELECT status FROM warsztat WHERE id = ?', [id], (err, rows) => {
       if (err) {
         console.error('Błąd weryfikacji statusu:', err);
@@ -350,11 +346,9 @@ app.patch('/api/warsztat/:id', (req, res) => {
         console.log('Status w bazie po aktualizacji:', rows[0].status);
       }
 
-      // Formatowanie wiadomości Telegram
       const message = `Wizyta o ID ${id} została ${status === 'zaakceptowane' ? 'zaakceptowana' : 'odrzucona'}.`;
       console.log('Przygotowana wiadomość Telegram:', message);
 
-      // Wysłanie wiadomości Telegram
       sendTelegramMessage(process.env.TELEGRAM_CHAT_ID, message)
         .then(() => {
           console.log('Wysłano powiadomienie Telegram:', { id, status, message });
@@ -418,10 +412,9 @@ app.get('/api/dostepne-terminy', (req, res) => {
 
 app.delete('/api/dni-nieczynne/:id', (req, res) => {
   const { id } = req.params;
+  console.log('Otrzymano żądanie DELETE /api/dni-nieczynne/:id:', { id, timestamp: new Date().toISOString() });
+
   const query = 'DELETE FROM dni_nieczynne WHERE id = ?';
-
-  console.log('Otrzymano żądanie DELETE /api/dni-nieczynne/:id:', { id });
-
   connection.query(query, [id], (err, result) => {
     if (err) {
       console.error('❌ Błąd usuwania dnia nieczynnego:', err);
@@ -433,6 +426,7 @@ app.delete('/api/dni-nieczynne/:id', (req, res) => {
       return res.status(404).json({ error: 'Dzień nieczynny nie znaleziony' });
     }
 
+    console.log('✅ Dzień nieczynny usunięty, ID:', id);
     res.json({ message: 'Dzień nieczynny usunięty' });
   });
 });
@@ -457,6 +451,7 @@ app.delete('/api/warsztat/:id', (req, res) => {
     res.json({ message: 'Wizyta usunięta' });
   });
 });
+
 app.patch('/api/oleje/:id', (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
@@ -512,6 +507,7 @@ app.delete('/api/oleje/:id', (req, res) => {
     res.json({ message: 'Zamówienie usunięte' });
   });
 });
+
 app.post('/api/oleje', (req, res) => {
   const { imie_nazwisko, numer_telefonu, rodzaj_oleju, ilosc } = req.body;
 

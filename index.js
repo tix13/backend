@@ -12,7 +12,8 @@ const allowedOrigins = [
   'http://localhost:3000',      // Do testów lokalnych
   'https://test.olwit.com.pl',  // Twoja domena testowa
   'http://olwit.com.pl',        // Domena produkcyjna bez SSL
-  'https://olwit.com.pl'        // Domena produkcyjna z SSL
+  'https://olwit.com.pl',        // Domena produkcyjna z SSL
+  'olwit.com.pl'
 ];
 
 app.use(cors({

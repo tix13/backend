@@ -10,7 +10,7 @@ const port = process.env.PORT || 5000;
 
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://test.olwit.com.pl'
+  'https://olwit.com.pl'
 ];
 
 app.use(cors({

@@ -8,12 +8,28 @@ const fetch = require('node-fetch');
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors({ origin: 'http://localhost:3000', methods: ['GET', 'POST', 'DELETE', 'PATCH'], credentials: true }));
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://test.olwit.com.pl'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Zezwalaj na zapytania bez 'origin' (np. z Postmana) lub z dozwolonej listy
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'DELETE', 'PATCH'],
+  credentials: true
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const connection = mysql.createConnection({
-  host: 'mysql3.webio.pl:3306',
+  host: 'mysql3.webio.pl',
   user: '23241_admin',
   password: 'Xeos1985!',
   database: '23241_test',

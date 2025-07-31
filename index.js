@@ -9,8 +9,10 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 const allowedOrigins = [
-  'http://localhost:3000',
-  'https://olwit.com.pl'
+  'http://localhost:3000',      // Do testów lokalnych
+  'https://test.olwit.com.pl',  // Twoja domena testowa
+  'http://olwit.com.pl',        // Domena produkcyjna bez SSL
+  'https://olwit.com.pl'        // Domena produkcyjna z SSL
 ];
 
 app.use(cors({

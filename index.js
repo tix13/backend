@@ -593,7 +593,10 @@ app.get('/api/admin-data', (req, res) => {
     });
   });
 });
-
+// Dodaj tę ścieżkę, aby odpowiadać na "health checks"
+app.get('/', (req, res) => {
+  res.send('API serwera jest aktywne. Wszystko działa poprawnie.');
+});
 app.listen(port, () => {
   console.log(`🚀 Serwer działa na porcie ${port}`);
 });
